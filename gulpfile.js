@@ -45,7 +45,7 @@ gulp.task('test:e2e', gulp.series(
     testE2e,
     stopServer
 ));
-gulp.task('test', gulp.parallel(
+gulp.task('test', gulp.series(
     'test:unit',
     'test:e2e'
 ));

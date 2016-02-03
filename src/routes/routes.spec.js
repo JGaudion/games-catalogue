@@ -15,7 +15,7 @@ describe('routes', function() {
 
     function navigateTo(url) {
         $location.path(url);
-        $rootScope.$apply();
+        $rootScope.$digest();
     }
 
     function navigatesHome() {
