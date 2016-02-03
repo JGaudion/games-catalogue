@@ -1,4 +1,4 @@
-# Scott Logic Games
+# Games Catalogue
 
 ###Setup
 

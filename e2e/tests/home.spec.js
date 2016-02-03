@@ -6,6 +6,6 @@ describe('Home', function() {
     function headingShouldExist() {
         homePage.navigate();
 
-        expect(homePage.heading).toEqual('Scott Logic Games');
+        expect(homePage.heading).toEqual('Games Catalogue');
     }
 });
