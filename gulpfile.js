@@ -4,7 +4,7 @@ var $ = require('gulp-load-plugins')();
 var path  = require('path');
 var del = require('del');
 var args = require('yargs').argv;
-var objectAssign = require('object-assign');
+var _ = require('lodash');
 var KarmaServer = require('karma').Server;
 var protractor = require("gulp-protractor").protractor;
 
@@ -131,17 +131,19 @@ function buildJs(done) {
         }
 
         function webpackDevConfig(webpackConfig) {
-            return objectAssign(webpackConfig, {
-                devtool: 'source-map'
-            });
+            webpackConfig = _.cloneDeep(webpackConfig);
+            webpackConfig.devtool = 'source-map';
+
+            return webpackConfig;
         }
 
         function webpackProdConfig(webpackConfig) {
-            return objectAssign(webpackConfig, {
-                plugins: [
-                    new webpack.optimize.UglifyJsPlugin()
-                ]
-            });
+            webpackConfig = _.cloneDeepWith(webpackConfig);
+            webpackConfig.plugins = [
+                new webpack.optimize.UglifyJsPlugin()
+            ];
+
+            return webpackConfig;
         }
     }
 }
