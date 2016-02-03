@@ -5,5 +5,6 @@ var app = angular.module('GamesCatalogue', [uiRouter]);
 
 require('../routes')(app);
 require('../navbar')(app);
+require('../games')(app);
 
 module.exports = app;

@@ -13,7 +13,9 @@ module.exports = function(app) {
             })
             .state('app.games', {
                 url: '/games',
-                template: require('../games/games.html')
+                template: require('../games/games.html'),
+                controller: 'GamesController',
+                controllerAs: 'games'
             });
 
         $locationProvider.html5Mode(true);

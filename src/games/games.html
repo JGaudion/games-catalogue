@@ -1,1 +1,4 @@
 <h1>Games</h1>
+<ul ng-if="games.exist()">
+    <li ng-repeat="game in games.list">{{ game.name }}</li>
+</ul>
