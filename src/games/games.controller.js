@@ -29,6 +29,7 @@ module.exports = function(app) {
         }
 
         function setError(error) {
+            // TODO: Show an error message to the user
             games.error = error;
         }
     }

@@ -7,7 +7,7 @@ var args = require('yargs').argv;
 var _ = require('lodash');
 var KarmaServer = require('karma').Server;
 var protractor = require("gulp-protractor").protractor;
-var serverAddress = require('./tools/server-address');
+var serverAddress = require('./tools/server/server-address');
 
 var webpack = require('webpack');
 var webpackConfig = require('./tools/webpack.config.js');
@@ -135,12 +135,14 @@ function buildJs(done) {
         function webpackDevConfig(webpackConfig) {
             webpackConfig = _.cloneDeep(webpackConfig);
             webpackConfig.devtool = 'source-map';
+            webpackConfig.entry = ['./config/dev.config.js'].concat(webpackConfig.entry);
 
             return webpackConfig;
         }
 
         function webpackProdConfig(webpackConfig) {
             webpackConfig = _.cloneDeepWith(webpackConfig);
+            webpackConfig.entry = ['./config/prod.config.js'].concat(webpackConfig.entry);
             webpackConfig.plugins = [
                 new webpack.optimize.UglifyJsPlugin()
             ];
@@ -189,8 +191,9 @@ function enableDev(done) {
 
 function startServer(done) {
     nodemon({
-        script: 'tools/server.js'
-    }).once('start', done);
+        script: 'tools/server/server.js'
+    }).once('start', done)
+        .on('restart', browserSync.reload);
 }
 
 function startBrowserSync(done) {
