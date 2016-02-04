@@ -1,5 +1,5 @@
 describe('routes', function() {
-    beforeEach(module('SLGames'));
+    beforeEach(module('GamesCatalogue'));
 
     var $rootScope;
     var $location;

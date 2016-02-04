@@ -1,5 +1,5 @@
 describe('navbar', function() {
-    beforeEach(module('SLGames'));
+    beforeEach(module('GamesCatalogue'));
 
     var $location;
     beforeEach(module(function($provide) {
