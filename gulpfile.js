@@ -7,12 +7,12 @@ var args = require('yargs').argv;
 var _ = require('lodash');
 var KarmaServer = require('karma').Server;
 var protractor = require("gulp-protractor").protractor;
+var serverAddress = require('./tools/server-address');
 
 var webpack = require('webpack');
 var webpackConfig = require('./tools/webpack.config.js');
-var history = require('connect-history-api-fallback');
-var serverConf = require('./tools/server.conf.js');
 
+var nodemon = require('nodemon');
 var browserSync = require('browser-sync').create();
 
 gulp.task('clean', clean);
@@ -35,15 +35,14 @@ gulp.task('watch', gulp.parallel('watch:html', 'watch:css'));
 
 gulp.task('start', gulp.series(
     'build',
-    startServer.bind(null, { openBrowser: true })
+    startServer,
+    openBrowser
 ));
 
 gulp.task('test:unit', testUnit);
 gulp.task('test:e2e', gulp.series(
     'build',
-    startServer.bind(null, { openBrowser: false }),
-    testE2e,
-    stopServer
+    testE2e
 ));
 gulp.task('test', gulp.series(
     'test:unit',
@@ -61,7 +60,10 @@ gulp.task('dev', gulp.series(
     gulp.parallel(
         'test:unit',
         'watch',
-        startServer.bind(null, { openBrowser: true })
+        gulp.series(
+            startServer,
+            startBrowserSync
+        )
     )
 ));
 
@@ -185,29 +187,26 @@ function enableDev(done) {
     done();
 }
 
-function startServer(config, done) {
-    var open = config.openBrowser ? 'local' : false;
-
-    var bsConfig = {
-        notify: false,
-        open: open,
-        port: serverConf.port,
-        server: {
-            baseDir: './dist',
-            middleware: [history()]
-        }
-    };
-
-    if(args.dev) {
-        bsConfig.files = ['dist/**/*.*'];
-    } else {
-        bsConfig.ui = false;
-    }
-
-    browserSync.init(bsConfig, done);
+function startServer(done) {
+    nodemon({
+        script: 'tools/server.js'
+    }).once('start', done);
 }
 
-function stopServer(done) {
-    browserSync.exit();
+function startBrowserSync(done) {
+    var config = {
+        files: ['dist/**/*.*'],
+        notify: false,
+        port: 5000,
+        proxy: serverAddress
+    };
+
+    browserSync.init(config, done);
+}
+
+function openBrowser(done) {
+    var opn = require('opn');
+
+    opn(serverAddress);
     done();
 }
