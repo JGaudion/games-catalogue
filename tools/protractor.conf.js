@@ -1,6 +1,7 @@
-var serverAddress = require('./server-address');
-
 exports.config = {
-    specs: ['e2e/tests/**/*.spec.js'],
-    baseUrl: serverAddress
+    baseUrl: require('./server-address'),
+    onPrepare: function() {
+        global.server = require('./server');
+    },
+    specs: ['e2e/tests/**/*.spec.js']
 };
