@@ -1,19 +1,35 @@
 module.exports = function(app) {
     app.controller('GamesController', GamesController);
 
-    function GamesController() {
+    GamesController.$inject = ['$q', '_', 'gamesService'];
+    function GamesController($q, _, gamesService) {
         var games = this;
         games.list = [];
         games.exist = exist;
+        games.error = null;
 
         activate();
 
         function activate() {
-            // TODO: Games service to get list
+            gamesService.getGames()
+                .then(setGames)
+                .catch(setError);
         }
 
         function exist() {
             return games.list.length > 0;
+        }
+
+        function setGames(_games_) {
+            if(!_.isArray(_games_)) {
+                return $q.reject('Games incorrectly formatted');
+            }
+
+            games.list = _games_;
+        }
+
+        function setError(error) {
+            games.error = error;
         }
     }
 };
