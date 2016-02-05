@@ -1,1 +1,11 @@
+<div ng-show="games.error" class="alert alert-danger">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{ games.error }}
+</div>
 <h1>Games</h1>
+<div class="no-games ng-hide" ng-show="games.loaded && !games.exist()">
+    No games currently exist
+</div>
+<ul ng-if="games.exist()">
+    <li ng-repeat="game in games.list" ng-bind="game.name"></li>
+</ul>

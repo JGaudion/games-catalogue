@@ -7,7 +7,7 @@ var args = require('yargs').argv;
 var _ = require('lodash');
 var KarmaServer = require('karma').Server;
 var protractor = require("gulp-protractor").protractor;
-var serverAddress = require('./tools/server-address');
+var serverAddress = require('./tools/server/server-address');
 
 var webpack = require('webpack');
 var webpackConfig = require('./tools/webpack.config.js');
@@ -41,8 +41,10 @@ gulp.task('start', gulp.series(
 
 gulp.task('test:unit', testUnit);
 gulp.task('test:e2e', gulp.series(
+    enableTest,
     'build',
-    testE2e
+    testE2e,
+    disableTest
 ));
 gulp.task('test', gulp.series(
     'test:unit',
@@ -136,7 +138,7 @@ function buildJs(done) {
             webpackConfig = _.cloneDeep(webpackConfig);
             webpackConfig.devtool = 'source-map';
 
-            return webpackConfig;
+            return webpackConfigEntry(webpackConfig);
         }
 
         function webpackProdConfig(webpackConfig) {
@@ -144,6 +146,19 @@ function buildJs(done) {
             webpackConfig.plugins = [
                 new webpack.optimize.UglifyJsPlugin()
             ];
+
+            return webpackConfigEntry(webpackConfig);
+        }
+
+        function webpackConfigEntry(webpackConfig) {
+            var entry = './config/dev.config.js';
+
+            if(!args.test && !args.dev) {
+                entry = './config/prod.config.js';
+            }
+
+            webpackConfig = _.cloneDeepWith(webpackConfig);
+            webpackConfig.entry = [entry].concat(webpackConfig.entry);
 
             return webpackConfig;
         }
@@ -182,6 +197,16 @@ function testE2e() {
         });
 }
 
+function enableTest(done) {
+    args.test = true;
+    done();
+}
+
+function disableTest(done) {
+    args.test = false;
+    done();
+}
+
 function enableDev(done) {
     args.dev = true;
     done();
@@ -189,8 +214,9 @@ function enableDev(done) {
 
 function startServer(done) {
     nodemon({
-        script: 'tools/server.js'
-    }).once('start', done);
+        script: 'tools/server/server.js'
+    }).once('start', done)
+        .on('restart', browserSync.reload);
 }
 
 function startBrowserSync(done) {
