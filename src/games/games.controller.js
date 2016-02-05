@@ -7,13 +7,15 @@ module.exports = function(app) {
         games.list = [];
         games.exist = exist;
         games.error = null;
+        games.loaded = false;
 
         activate();
 
         function activate() {
             gamesService.getGames()
                 .then(setGames)
-                .catch(setError);
+                .catch(setError)
+                .finally(setLoaded);
         }
 
         function exist() {
@@ -31,6 +33,10 @@ module.exports = function(app) {
         function setError(error) {
             // TODO: Show an error message to the user
             games.error = error;
+        }
+
+        function setLoaded() {
+            games.loaded = true;
         }
     }
 };

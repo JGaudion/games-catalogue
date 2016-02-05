@@ -41,8 +41,10 @@ gulp.task('start', gulp.series(
 
 gulp.task('test:unit', testUnit);
 gulp.task('test:e2e', gulp.series(
+    enableTest,
     'build',
-    testE2e
+    testE2e,
+    disableTest
 ));
 gulp.task('test', gulp.series(
     'test:unit',
@@ -135,17 +137,28 @@ function buildJs(done) {
         function webpackDevConfig(webpackConfig) {
             webpackConfig = _.cloneDeep(webpackConfig);
             webpackConfig.devtool = 'source-map';
-            webpackConfig.entry = ['./config/dev.config.js'].concat(webpackConfig.entry);
 
-            return webpackConfig;
+            return webpackConfigEntry(webpackConfig);
         }
 
         function webpackProdConfig(webpackConfig) {
             webpackConfig = _.cloneDeepWith(webpackConfig);
-            webpackConfig.entry = ['./config/prod.config.js'].concat(webpackConfig.entry);
             webpackConfig.plugins = [
                 new webpack.optimize.UglifyJsPlugin()
             ];
+
+            return webpackConfigEntry(webpackConfig);
+        }
+
+        function webpackConfigEntry(webpackConfig) {
+            var entry = './config/dev.config.js';
+
+            if(!args.test && !args.dev) {
+                entry = './config/prod.config.js';
+            }
+
+            webpackConfig = _.cloneDeepWith(webpackConfig);
+            webpackConfig.entry = [entry].concat(webpackConfig.entry);
 
             return webpackConfig;
         }
@@ -182,6 +195,16 @@ function testE2e() {
         .on('error', function(e) {
             throw new Error('e2e tests failed');
         });
+}
+
+function enableTest(done) {
+    args.test = true;
+    done();
+}
+
+function disableTest(done) {
+    args.test = false;
+    done();
 }
 
 function enableDev(done) {

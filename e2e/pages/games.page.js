@@ -1,7 +1,9 @@
 var gamesPage = Object.create({}, {
     navigate: { value: navigate },
     heading: { get: getHeading },
-    games: { get: getGames }
+    games: { get: getGames },
+    noGamesMessage: { get: getNoGamesMessage },
+    error: { get: getError }
 });
 
 module.exports = gamesPage;
@@ -16,4 +18,12 @@ function getHeading() {
 
 function getGames() {
     return element.all(by.exactRepeater('game in games.list')).getText();
+}
+
+function getError() {
+    return element(by.className('alert-danger')).getText();
+}
+
+function getNoGamesMessage() {
+    return element(by.className('no-games'));
 }

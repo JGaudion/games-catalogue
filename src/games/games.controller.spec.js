@@ -28,6 +28,10 @@ describe('GamesController', function() {
         it('sets error to null', function() {
             expect(games.error).toBeNull();
         });
+
+        it('sets loaded to false', function() {
+            expect(games.loaded).toEqual(false);
+        });
     });
 
     it('sets list', function() {
@@ -37,6 +41,13 @@ describe('GamesController', function() {
         $rootScope.$digest();
 
         expect(games.list).toEqual(gamesList);
+    });
+
+    it('set loaded to true', function() {
+        createController();
+        $rootScope.$digest();
+
+        expect(games.loaded).toEqual(true);
     });
 
     describe('error', function() {
