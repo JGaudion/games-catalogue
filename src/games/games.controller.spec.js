@@ -33,7 +33,7 @@ describe('GamesController', function() {
     it('sets list', function() {
         var gamesList = ['game1', 'game2'];
 
-        createController(gamesList);
+        createController({ gamesList: gamesList });
         $rootScope.$digest();
 
         expect(games.list).toEqual(gamesList);
@@ -47,8 +47,17 @@ describe('GamesController', function() {
             expect(games.error).not.toBeNull();
         });
 
+        it('is set when a rejected promise is returned', function() {
+            var error = 'This is an error';
+
+            createController({ error: error });
+            $rootScope.$digest();
+
+            expect(games.error).toEqual(error);
+        });
+
         it('is not set when returned games list is an array', function() {
-            createController([]);
+            createController({ gamesList: []});
             $rootScope.$digest();
 
             expect(games.error).toBeNull();
@@ -74,8 +83,15 @@ describe('GamesController', function() {
     });
 
     var games;
-    function createController(gamesList) {
-        gamesService.getGames.and.returnValue($q.when(gamesList));
+    function createController(config) {
+        config = config || {};
+
+        if(config.error) {
+            gamesService.getGames.and.returnValue($q.reject(config.error));
+        } else {
+            gamesService.getGames.and.returnValue($q.when(config.gamesList));
+        }
+
         games = $controller('GamesController');
     }
 });

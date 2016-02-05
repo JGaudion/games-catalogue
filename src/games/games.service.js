@@ -1,8 +1,8 @@
 module.exports = function(module) {
     module.factory('gamesService', gamesService);
 
-    gamesService.$inject = ['$http', 'config'];
-    function gamesService($http, config) {
+    gamesService.$inject = ['$http', '$q', 'config'];
+    function gamesService($http, $q, config) {
         return {
             getGames: getGames
         };
@@ -11,6 +11,9 @@ module.exports = function(module) {
             return $http.get(config.endpoint + 'games')
                 .then(function(res) {
                     return res.data;
+                })
+                .catch(function(res) {
+                    return $q.reject(res.data);
                 });
         }
     }
