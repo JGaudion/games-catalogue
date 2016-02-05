@@ -12,3 +12,11 @@ app.get('*', function(req, res) {
 });
 
 app.listen(serverConfig.port);
+
+module.exports = {
+    setGames: setGames
+};
+
+function setGames(games) {
+    require('./games/model').games = games;
+}
